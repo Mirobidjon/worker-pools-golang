@@ -12,6 +12,7 @@ func ExportExcel(db *sqlx.DB) {
 	var i, key int64
 	page := 25
 	limit := 2000
+	workerCount := 2
 	style, _ := f.NewStyle(`{"alignment":{"horizontal":"center", "vertical": "center", "wrap_text": true}}`)
 	f.SetCellStyle("Sheet1", "A1", fmt.Sprintf("G%d", page*limit), style)
 	f.SetColWidth("Sheet1", "A", "D", 30)
@@ -20,7 +21,7 @@ func ExportExcel(db *sqlx.DB) {
 	jobsCount := page * limit
 	jobs := make(chan Data, jobsCount)
 	results := make(chan bool, jobsCount)
-	for k := 1; k <= 2; k++ {
+	for k := 1; k <= workerCount; k++ {
 		go Writers(jobs, results, f)
 	}
 
