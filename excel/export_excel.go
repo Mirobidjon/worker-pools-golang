@@ -10,8 +10,8 @@ import (
 func ExportExcel(db *sqlx.DB) {
 	f := excelize.NewFile()
 	var i, key int64
-	page := 25
-	limit := 2000
+	page := 140
+	limit := 500
 	workerCount := 2
 	style, _ := f.NewStyle(`{"alignment":{"horizontal":"center", "vertical": "center", "wrap_text": true}}`)
 	f.SetCellStyle("Sheet1", "A1", fmt.Sprintf("G%d", page*limit), style)
@@ -43,12 +43,14 @@ func ExportExcel(db *sqlx.DB) {
 		}
 	}
 
+	close(results)
+
 	err := f.SaveAs("01.create.xlsx")
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	fmt.Printf("page : %d  limit : %d \n\n", page, limit)
+	fmt.Println("O'qish uchun Ketgan vaqt:", ReadDuration.Milliseconds())
+	fmt.Printf("\npage : %d  limit : %d \n\n", page, limit)
 }
 
 func Writers(jobs <-chan Data, results chan<- bool, f *excelize.File) {

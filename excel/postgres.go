@@ -10,7 +10,10 @@ import (
 	"github.com/manveru/faker"
 )
 
-var fakeData *faker.Faker
+var (
+	fakeData     *faker.Faker
+	ReadDuration time.Duration
+)
 
 type Data struct {
 	ID       string `db:"id"`
@@ -22,7 +25,7 @@ type Data struct {
 
 func Importdb(db *sqlx.DB) {
 	fakeData, _ = faker.New("en")
-	for i := 0; i < 55000; i++ {
+	for i := 0; i < 20000; i++ {
 		id, _ := uuid.NewRandom()
 		parent_id, _ := uuid.NewRandom()
 		name := fakeData.Name()
@@ -57,6 +60,7 @@ func GetDB(db *sqlx.DB, page, limit int64) []Data {
 		log.Fatal(err)
 	}
 	duration := time.Since(start)
-	fmt.Println("O'qish uchun Ketgan vaqt:", duration.Milliseconds())
+	ReadDuration += duration
+	// fmt.Println("O'qish uchun Ketgan vaqt:", duration.Milliseconds())
 	return values
 }
